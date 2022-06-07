@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Flex,
+  Image,
   Spacer,
 } from '@chakra-ui/react';
 import { useResponsiveness } from '../hooks/useResponsiveness';
@@ -18,8 +19,13 @@ export default function Header() {
       align="center"
       h="10vh"
     >
-      <Spacer />
-      {isDesktopVersion ? <Nav /> : <Drawer />}
+      <Image
+        src="/assets/img/logo.png"
+        alt="Logo"
+        h="100%"
+      />
+      {/* <Spacer />
+      {isDesktopVersion ? <Nav /> : <Drawer />} */}
     </Flex>
   );
 }

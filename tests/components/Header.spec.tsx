@@ -15,34 +15,48 @@ describe('Component: Header', () => {
     cleanup();
   });
 
-  describe('Responsiveness', () => {
-    describe('Desktop', () => {
-      it('Should render the nav; does not render the drawer', () => {
-        const useResponsivenessMock = useResponsiveness as jest
+  describe('Building site period', () => {
+    it('Should render only the logo', () => {
+      const useResponsivenessMock = useResponsiveness as jest
         .MockedFunction<typeof useResponsiveness>;
 
-        useResponsivenessMock.mockReturnValue(true);
+      useResponsivenessMock.mockReturnValue(true);
 
-        render(<Header />);
-
-        expect(useResponsivenessMock).toHaveBeenCalled();
-        expect(screen.getByTestId('logo')).toBeInTheDocument();
-        expect(screen.queryByTestId('open-drawer-button')).not.toBeInTheDocument();
-      });
-    });
-
-    describe('Mobile', () => {
-      it('Should render the drawer', () => {
-        const useResponsivenessMock = useResponsiveness as jest
-          .MockedFunction<typeof useResponsiveness>;
-
-        useResponsivenessMock.mockReturnValue(false);
-
-        render(<Header />);
-
-        expect(useResponsivenessMock).toHaveBeenCalled();
-        expect(screen.getByTestId('open-drawer-button')).toBeInTheDocument();
-      });
+      expect(useResponsivenessMock).toHaveBeenCalled();
+      expect(screen.getByAltText('Logo')).toBeInTheDocument();
+      expect(screen.queryByTestId('nav')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('open-drawer-button')).not.toBeInTheDocument();
     });
   });
+
+  // describe('Responsiveness', () => {
+  //   describe('Desktop', () => {
+  //     it('Should render the nav; does not render the drawer', () => {
+  //       const useResponsivenessMock = useResponsiveness as jest
+  //       .MockedFunction<typeof useResponsiveness>;
+
+  //       useResponsivenessMock.mockReturnValue(true);
+
+  //       render(<Header />);
+
+  //       expect(useResponsivenessMock).toHaveBeenCalled();
+  //       expect(screen.getByTestId('logo')).toBeInTheDocument();
+  //       expect(screen.queryByTestId('open-drawer-button')).not.toBeInTheDocument();
+  //     });
+  //   });
+
+  //   describe('Mobile', () => {
+  //     it('Should render the drawer', () => {
+  //       const useResponsivenessMock = useResponsiveness as jest
+  //         .MockedFunction<typeof useResponsiveness>;
+
+  //       useResponsivenessMock.mockReturnValue(false);
+
+  //       render(<Header />);
+
+  //       expect(useResponsivenessMock).toHaveBeenCalled();
+  //       expect(screen.getByTestId('open-drawer-button')).toBeInTheDocument();
+  //     });
+  //   });
+  // });
 });
