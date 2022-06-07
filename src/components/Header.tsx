@@ -2,20 +2,20 @@ import React from 'react';
 import {
   Flex,
   Image,
-  Spacer,
+  // Spacer,
 } from '@chakra-ui/react';
-import { useResponsiveness } from '../hooks/useResponsiveness';
-import Nav from './Nav';
-import Drawer from './Drawer';
+// import { useResponsiveness } from '../hooks/useResponsiveness';
+// import Nav from './Nav';
+// import Drawer from './Drawer';
 
 export default function Header() {
-  const isDesktopVersion = useResponsiveness('desktop');
+  // const isDesktopVersion = useResponsiveness('desktop');
 
   return (
     <Flex
-      direction={isDesktopVersion ? 'row' : 'row-reverse'}
-      pl={['6', '8']}
-      pr={['6', '32']}
+      as="header"
+      // direction={isDesktopVersion ? 'row' : 'row-reverse'}
+      px={['6', '32']}
       align="center"
       h="10vh"
     >
