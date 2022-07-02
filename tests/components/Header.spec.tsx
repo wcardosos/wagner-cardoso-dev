@@ -1,6 +1,5 @@
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
-import { useResponsiveness } from '../../src/hooks/useResponsiveness';
 import Header from '../../src/components/Header';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -17,12 +16,6 @@ describe('Component: Header', () => {
 
   describe('Building site period', () => {
     it('Should render only the logo', () => {
-      const useResponsivenessMock = useResponsiveness as jest
-        .MockedFunction<typeof useResponsiveness>;
-
-      useResponsivenessMock.mockReturnValue(true);
-
-      expect(useResponsivenessMock).toHaveBeenCalled();
       expect(screen.getByAltText('Logo')).toBeInTheDocument();
       expect(screen.queryByTestId('nav')).not.toBeInTheDocument();
       expect(screen.queryByTestId('open-drawer-button')).not.toBeInTheDocument();
