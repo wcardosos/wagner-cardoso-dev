@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Center,
-  Flex,
   Heading,
   HStack,
   Image,
@@ -28,14 +27,15 @@ export default function Home() {
           minChildWidth="320px"
           spacing={['4', '16']}
         >
-          <Flex align="center">
+          <Center>
             <Image
               h={['256', '256', '368']}
-              src="/assets/img/building-site.png"
-              alt="Site em construção"
+              borderRadius="full"
+              src="https://github.com/wcardosos.png?size=368"
+              alt="Wagner Cardoso"
             />
-          </Flex>
-          <Flex align="center">
+          </Center>
+          <Center>
             <VStack align="flex-start" spacing="4">
               <Heading color="red.500">Site em construção</Heading>
               <Text>
@@ -59,7 +59,7 @@ export default function Home() {
                 </Button>
               </Link>
             </VStack>
-          </Flex>
+          </Center>
         </SimpleGrid>
         <Center py={['8', '8', '0']}>
           <HStack spacing={['4', '8']}>
