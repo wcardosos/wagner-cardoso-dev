@@ -20,9 +20,9 @@ export default function Header() {
       h="10vh"
     >
       <Image
-        src="/assets/img/logo.png"
+        src="/assets/img/logo.webp"
         alt="Logo"
-        h="100%"
+        h={['70%', '100%']}
       />
       {/* <Spacer />
       {isDesktopVersion ? <Nav /> : <Drawer />} */}
