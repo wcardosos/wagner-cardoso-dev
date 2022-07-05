@@ -15,7 +15,7 @@ export default function Footer() {
           target="_blank"
         >
           <Image
-            src="/assets/img/gmail-icon.png"
+            src="/assets/img/gmail-icon.webp"
             alt="Contato Gmail"
             h={['6', '8']}
           />
@@ -25,7 +25,7 @@ export default function Footer() {
           target="_blank"
         >
           <Image
-            src="/assets/img/linkedin-icon.png"
+            src="/assets/img/linkedin-icon.webp"
             alt="Contato LinkedIn"
             h={['6', '8']}
           />
@@ -35,7 +35,7 @@ export default function Footer() {
           target="_blank"
         >
           <Image
-            src="/assets/img/github-icon.png"
+            src="/assets/img/github-icon.webp"
             alt="Contato Github"
             h={['6', '8']}
           />
