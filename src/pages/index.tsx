@@ -12,7 +12,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import Footer from '../components/Footer';
 
 export default function Home() {
   return (
@@ -61,7 +60,6 @@ export default function Home() {
             </VStack>
           </Center>
         </SimpleGrid>
-        <Footer />
       </Box>
     </>
   );
