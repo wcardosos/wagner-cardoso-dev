@@ -14,6 +14,9 @@ const config: Config = {
       ...colors,
     },
     extend: {},
+    fontFamily: {
+      sans: ['Montserrat', 'sans-serif'],
+    },
   },
   plugins: [],
 };
