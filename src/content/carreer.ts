@@ -15,7 +15,7 @@ export const jobs: Job[] = [
     companyLogo: '/assets/carreer/prevision-logo.webp',
     role: 'Desenvolvedor Fullstack',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Consequat magna phasellus eleifend turpis odio congue malesuada. Risus mi fringilla amet eget. Et amet bibendum purus platea.',
+      'Atualmente trabalho na empresa líder do mercado de construtechs no Brasil desenvolvendo produtos inovadores que auxiliam empresas do ramo da construção civil a serem mais eficientes.',
     startMonth: 'jul. 2022',
     endMonth: 'Atual',
   },
@@ -25,7 +25,7 @@ export const jobs: Job[] = [
     companyLogo: '/assets/carreer/tag-logo.webp',
     role: 'Desenvolvedor Backend',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Consequat magna phasellus eleifend turpis odio congue malesuada. Risus mi fringilla amet eget. Et amet bibendum purus platea.',
+      'Atuei como desenvolvedor no time do Backoffice. O time atendia principalmente as áreas de produto e logística da empresa. Forte experiência em suporte e desenvolvimento de ferramentas internas.',
     startMonth: 'abr. 2021',
     endMonth: 'mar. 2022',
   },
@@ -35,7 +35,7 @@ export const jobs: Job[] = [
     companyLogo: '/assets/carreer/bpa-logo.webp',
     role: 'Desenvolvedor RPA',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Consequat magna phasellus eleifend turpis odio congue malesuada. Risus mi fringilla amet eget. Et amet bibendum purus platea.',
+      'Desenvolvi e fiz manutenção em robôs de automação de processos para grandes empresas como Bradesco, Porto Seguro, Notre Dame Intermédica, entre outros.',
     startMonth: 'set. 2020',
     endMonth: 'abr. 2021',
   },
