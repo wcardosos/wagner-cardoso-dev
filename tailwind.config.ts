@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
     colors: {
       'brand-black': '#262525',
+      'brand-black-light': '#2A2A2C',
       'brand-red': '#E53E3E',
       ...colors,
     },
