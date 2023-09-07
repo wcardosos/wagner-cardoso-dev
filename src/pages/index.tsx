@@ -78,7 +78,9 @@ export default function Home() {
           fale comigo.
         </p>
         <div className="flex justify-center mt-6 lg:mt-8">
-          <Button>Entrar em contato</Button>
+          <a href="mailto:wagnerdev01@gmail.com">
+            <Button>Entrar em contato</Button>
+          </a>
         </div>
       </Section>
 
