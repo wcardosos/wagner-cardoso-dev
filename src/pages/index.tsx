@@ -72,6 +72,18 @@ export default function Home() {
         </div>
       </Section>
 
+      <Section title="Blog">
+        <p>
+          Em meu blog compartilho minhas experiências neste mundo fantástico da
+          programação.
+        </p>
+        <div className="flex justify-center mt-6 lg:mt-8">
+          <a href="https://blog.wagnercardoso.dev" target="_blank">
+            <Button>Acessar blog</Button>
+          </a>
+        </div>
+      </Section>
+
       <Section title="Contato">
         <p>
           Curtiu o que viu e quer entrar em contato? Clique no botão abaixo e
