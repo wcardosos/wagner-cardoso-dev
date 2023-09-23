@@ -93,7 +93,11 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
           programação.
         </p>
         <div className="flex justify-center mt-6 lg:mt-8">
-          <a href="https://blog.wagnercardoso.dev" target="_blank">
+          <a
+            href="https://blog.wagnercardoso.dev"
+            target="_blank"
+            rel="noreferrer"
+          >
             <Button>Acessar blog</Button>
           </a>
         </div>
