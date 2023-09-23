@@ -5,11 +5,26 @@ import Section from '@/components/section';
 import SocialNetworks from '@/components/social-networks';
 import { jobs } from '@/content/carreer';
 import Image from 'next/image';
+import Script from 'next/script';
 import React from 'react';
 
-export default function Home() {
+interface HomeProps {
+  googleAnalyticsId: string;
+}
+
+export default function Home({ googleAnalyticsId }: HomeProps) {
   return (
     <>
+      <Script src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID" />
+      <Script id="google-analytics">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', '${googleAnalyticsId}');
+        `}
+      </Script>
       <section>
         <div className="my-8 lg:my-16 flex flex-col lg:flex-row lg:justify-center gap-4 lg:gap-8">
           <div className="flex justify-center">
@@ -99,4 +114,14 @@ export default function Home() {
       <Footer />
     </>
   );
+}
+
+export async function getStaticProps() {
+  const { GOOGLE_ANALYTICS_ID } = process.env;
+
+  return {
+    props: {
+      googleAnalyticsId: GOOGLE_ANALYTICS_ID,
+    },
+  };
 }
