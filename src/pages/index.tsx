@@ -1,5 +1,4 @@
 import Button from '@/components/button';
-import Footer from '@/components/footer';
 import Job from '@/components/job';
 import Section from '@/components/section';
 import SocialNetworks from '@/components/social-networks';
@@ -114,8 +113,6 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
           </a>
         </div>
       </Section>
-
-      <Footer />
     </>
   );
 }

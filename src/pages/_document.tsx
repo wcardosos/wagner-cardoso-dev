@@ -1,4 +1,3 @@
-import Header from '@/components/header';
 import { Html, Head, Main, NextScript } from 'next/document';
 import React from 'react';
 
@@ -18,7 +17,6 @@ export default function Document() {
         />
       </Head>
       <body className="bg-brand-black max-w-5xl mx-auto px-6 text-gray-50">
-        <Header />
         <Main />
         <NextScript />
       </body>

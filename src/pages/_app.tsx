@@ -1,7 +1,10 @@
-import '@/styles/globals.css';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
+
+import '@/styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -9,7 +12,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Wagner Cardoso | Desenvolvedor Fullstack</title>
       </Head>
+      <Header />
       <Component {...pageProps} />
+      <Footer />
     </>
   );
 }
