@@ -15,9 +15,9 @@ export const jobs: Job[] = [
     companyLogo: '/assets/carreer/prevision-logo.webp',
     role: 'Desenvolvedor Fullstack',
     description:
-      'Atualmente trabalho na empresa líder do mercado de construtechs no Brasil desenvolvendo produtos inovadores que auxiliam empresas do ramo da construção civil a serem mais eficientes.',
+      'Trabalhei na empresa líder do mercado de construtechs no Brasil desenvolvendo produtos inovadores que auxiliam empresas do ramo da construção civil a serem mais eficientes.',
     startMonth: 'jul. 2022',
-    endMonth: 'Atual',
+    endMonth: 'out. 2023',
   },
   {
     carreerMoment: 2,
