@@ -25,7 +25,7 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
           gtag('config', '${googleAnalyticsId}');
         `}
       </Script>
-      <section className="flex flex-col lg:flex-row gap-6 min-h-[80vh]">
+      <section className="flex flex-col lg:flex-row gap-6 lg:gap-x-10 min-h-[80vh]">
         <div className="my-8 flex flex-col gap-6 lg:gap-8 lg:w-1/2 h-full">
           <Image
             className="rounded-full"
@@ -43,14 +43,25 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
           </div>
           <SocialNetworks />
         </div>
-        <div className="flex flex-col gap-2 lg:gap-6 lg:w-1/2 h-full justify-center items-center">
-          <CarreerButton text="Minha carreira" icon={ReadCvLogo} />
-          <CarreerButton text="Minhas habilidades" icon={CodeBlock} />
-          <CarreerButton text="Acesse meu blog" icon={Article} />
+        <div className="grid gap-y-2 lg:gap-y-6 lg:w-1/2 h-full my-auto">
+          <a
+            href="#carreer"
+            rel="noreferrer"
+          >
+            <CarreerButton text="Minha carreira" icon={ReadCvLogo} />
+          </a>
+          {/* <CarreerButton text="Minhas habilidades" icon={CodeBlock} /> */}
+          <a
+            href="https://blog.wagnercardoso.dev"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <CarreerButton text="Acesse meu blog" icon={Article} /> 
+          </a>
         </div>
       </section>
 
-      <Section title="Minha carreira">
+      <Section title="Minha carreira" id="carreer">
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 lg:justify-center">
           {jobs.map((job) => (
             <Job
