@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface JobProps {
   companyName: string;
   companyLogo: string;

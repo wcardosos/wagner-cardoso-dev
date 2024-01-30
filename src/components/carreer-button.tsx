@@ -1,5 +1,4 @@
 import { Icon as PhosphorIcon } from '@phosphor-icons/react';
-import React from 'react';
 
 interface CarreerButtonProps {
   text: string

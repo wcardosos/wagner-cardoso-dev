@@ -7,7 +7,6 @@ import { jobs } from '@/content/carreer';
 import { Article, CodeBlock, ReadCvLogo } from '@phosphor-icons/react';
 import Image from 'next/image';
 import Script from 'next/script';
-import React from 'react';
 
 interface HomeProps {
   googleAnalyticsId: string;
