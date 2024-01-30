@@ -1,8 +1,10 @@
 import Button from '@/components/button';
+import { CarreerButton } from '@/components/carreer-button';
 import Job from '@/components/job';
 import Section from '@/components/section';
 import SocialNetworks from '@/components/social-networks';
 import { jobs } from '@/content/carreer';
+import { Article, CodeBlock, ReadCvLogo } from '@phosphor-icons/react';
 import Image from 'next/image';
 import Script from 'next/script';
 import React from 'react';
@@ -24,25 +26,29 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
           gtag('config', '${googleAnalyticsId}');
         `}
       </Script>
-      <section>
-        <div className="my-8 lg:my-16 flex flex-col lg:flex-row lg:justify-center gap-4 lg:gap-8">
-          <div className="flex justify-center">
-            <Image
-              className="rounded-full"
-              src="https://github.com/wcardosos.png?size=256"
-              alt="Wagner Cardoso profile"
-              width={256}
-              height={256}
-            />
-          </div>
-          <div className="my-auto">
-            <h1 className="text-brand-red text-3xl font-bold my-2">
-              Olá, eu sou o Wagner!
+      <section className="flex flex-col lg:flex-row gap-6 min-h-[80vh]">
+        <div className="my-8 flex flex-col gap-6 lg:gap-8 lg:w-1/2 h-full">
+          <Image
+            className="rounded-full"
+            src="https://github.com/wcardosos.png?size=256"
+            alt="Wagner Cardoso profile"
+            width={192}
+            height={192}
+          />
+          <div>
+            <h1 className="text-brand-red text-3xl font-bold mt-2">
+              Wagner Cardoso
             </h1>
-            <span className="text-lg">Desenvolvedor Fullstack</span>
+            <span className="text-lg text-gray-200">Desenvolvedor Web Fullstack</span>
+            <p className="text-gray-100 mt-2">Apaixonado por programação e por usar a tecnologia para criar soluções inovadoras. Possuo experiência em diversas tecnologias, incluindo Node.js, React, Python, Ruby on Rails e Vue.js.</p>
           </div>
+          <SocialNetworks />
         </div>
-        <SocialNetworks />
+        <div className="flex flex-col gap-2 lg:gap-6 lg:w-1/2 h-full justify-center items-center">
+          <CarreerButton text="Minha carreira" icon={ReadCvLogo} />
+          <CarreerButton text="Minhas habilidades" icon={CodeBlock} />
+          <CarreerButton text="Acesse meu blog" icon={Article} />
+        </div>
       </section>
 
       <Section title="Sobre mim">
