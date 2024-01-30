@@ -4,7 +4,8 @@ import Job from '@/components/job';
 import Section from '@/components/section';
 import SocialNetworks from '@/components/social-networks';
 import { jobs } from '@/content/carreer';
-import { Article, CodeBlock, ReadCvLogo } from '@phosphor-icons/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Article, ReadCvLogo } from '@phosphor-icons/react';
 import Image from 'next/image';
 import Script from 'next/script';
 
