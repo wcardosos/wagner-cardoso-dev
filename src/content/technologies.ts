@@ -40,10 +40,23 @@ export enum Cloud {
 export enum Utilities {
   DOCKER = 'Docker',
   GIT = 'Git',
-  JIRA = 'Jira'
+  JIRA = 'Jira',
+  CI_CD = 'CI/CD'
 }
 
 export enum Agile {
   SCRUM = 'Scrum',
   KANBAN = 'Kanban'
+}
+
+export enum Architecture {
+  CLEAN_ARCHITECTURE = 'Clean Architecture',
+  MICROSERVICES = 'Microsserviços',
+  SERVERLESS = 'Serverless'
+}
+
+export enum CodeTechniques {
+  SOLID = 'SOLID',
+  TDD = 'TDD',
+  DDD = 'DDD',
 }

@@ -51,33 +51,8 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
         </div>
       </section>
 
-      <Section title="Sobre mim">
-        <p>
-          Meu nome é Wagner Cardoso e tenho 25 anos. Sou um desenvolvedor
-          fullstack apaixonado por programação e por usar a tecnologia para
-          criar soluções inovadoras. Possuo experiência em diversas tecnologias,
-          incluindo <strong>Node.js</strong>, <strong>React</strong>,{' '}
-          <strong>Python</strong>, <strong>Ruby on Rails</strong> e{' '}
-          <strong>Vue.js</strong>.
-        </p>
-        <br />
-        <p>
-          Ao longo da minha carreira, tive a oportunidade de trabalhar em
-          diversos projetos desafiadores e gratificantes. Meu maior sonho é usar
-          ajudar as pessoas por meio da tecnologia e me sinto muito grato de
-          realizar esse sonho todos os dias.
-        </p>
-        <br />
-        <p>
-          Estou sempre em busca de novas oportunidades de aprendizado e
-          crescimento profissional. Se você compartilha da mesma paixão pela
-          tecnologia ou está interessado em colaborar em projetos incríveis,
-          fique à vontade para entrar em contato.
-        </p>
-      </Section>
-
-      <Section title="Carreira">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-16 lg:justify-center">
+      <Section title="Minha carreira">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 lg:justify-center">
           {jobs.map((job) => (
             <Job
               key={job.carreerMoment}
@@ -85,6 +60,7 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
               companyLogo={job.companyLogo}
               role={job.role}
               description={job.description}
+              technologies={job.technologies}
               startMonth={job.startMonth}
               endMonth={job.endMonth}
             />
@@ -118,6 +94,31 @@ export default function Home({ googleAnalyticsId }: HomeProps) {
             <Button>Entrar em contato</Button>
           </a>
         </div>
+      </Section>
+
+      <Section title="Sobre mim">
+        <p>
+          Meu nome é Wagner Cardoso e tenho 25 anos. Sou um desenvolvedor
+          fullstack apaixonado por programação e por usar a tecnologia para
+          criar soluções inovadoras. Possuo experiência em diversas tecnologias,
+          incluindo <strong>Node.js</strong>, <strong>React</strong>,{' '}
+          <strong>Python</strong>, <strong>Ruby on Rails</strong> e{' '}
+          <strong>Vue.js</strong>.
+        </p>
+        <br />
+        <p>
+          Ao longo da minha carreira, tive a oportunidade de trabalhar em
+          diversos projetos desafiadores e gratificantes. Meu maior sonho é usar
+          ajudar as pessoas por meio da tecnologia e me sinto muito grato de
+          realizar esse sonho todos os dias.
+        </p>
+        <br />
+        <p>
+          Estou sempre em busca de novas oportunidades de aprendizado e
+          crescimento profissional. Se você compartilha da mesma paixão pela
+          tecnologia ou está interessado em colaborar em projetos incríveis,
+          fique à vontade para entrar em contato.
+        </p>
       </Section>
     </>
   );
