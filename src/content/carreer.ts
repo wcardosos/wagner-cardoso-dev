@@ -1,4 +1,14 @@
-import { Agile, Architecture, Backend, Cloud, CodeTechniques, Database, Frontend, Languages, Utilities } from './technologies';
+import {
+  Agile,
+  Architecture,
+  Backend,
+  Cloud,
+  CodeTechniques,
+  Database,
+  Frontend,
+  Languages,
+  Utilities,
+} from './technologies';
 
 interface Job {
   carreerMoment: number;
@@ -6,15 +16,39 @@ interface Job {
   companyLogo: string;
   role: string;
   description: {
-    text: string
-    impactPoints: string[]
+    text: string;
+    impactPoints: string[];
   };
-  technologies: string[]
+  technologies: string[];
   startMonth: string;
   endMonth: string;
 }
 
 export const jobs: Job[] = [
+  {
+    carreerMoment: 3,
+    companyName: 'ZRP',
+    companyLogo: '/assets/carreer/zrp-logo.webp',
+    role: 'Desenvolvedor Fullstack',
+    description: {
+      text: 'Empresa de consultoria que tem a missão de criar e gerir as melhores equipes de tecnologia para ajudar clientes a idealizar, implementar e melhorar soluções digitais, gerando inovação e progresso',
+      impactPoints: [
+        'Ajudar clientes nacionais e internacionais a criar soluções digitais impactantes',
+      ],
+    },
+    technologies: [
+      Languages.TYPESCRIPT,
+      Backend.NODEJS,
+      Frontend.NEXTJS,
+      Frontend.REACTJS,
+      Frontend.TAILWIND,
+      Utilities.GIT,
+      Utilities.JIRA,
+      Agile.KANBAN,
+    ],
+    startMonth: 'mar. 2024',
+    endMonth: 'atual',
+  },
   {
     carreerMoment: 2,
     companyName: 'Prevision',
@@ -25,8 +59,8 @@ export const jobs: Job[] = [
       impactPoints: [
         'Aumento de receita com desenvolvimento e manutenção de ETL’s para análises avançadas em dashboards',
         'Contato direto na criação e desenvolvimento de novo produto',
-        'Melhorias e definições de boas práticas de testes de software para a empresa.'
-      ]
+        'Melhorias e definições de boas práticas de testes de software para a empresa.',
+      ],
     },
     technologies: [
       Languages.RUBY,
@@ -46,7 +80,7 @@ export const jobs: Job[] = [
       Architecture.SERVERLESS,
       CodeTechniques.SOLID,
       CodeTechniques.TDD,
-      CodeTechniques.DDD
+      CodeTechniques.DDD,
     ],
     startMonth: 'jul. 2022',
     endMonth: 'out. 2023',
@@ -61,8 +95,8 @@ export const jobs: Job[] = [
       impactPoints: [
         'Desenvolvimento de novas funcionalidades para o backoffice da empresa',
         'Manutenção de sistema legado',
-        'Impacto positivo nos processos fiscais e logística da empresa'
-      ]
+        'Impacto positivo nos processos fiscais e logística da empresa',
+      ],
     },
     technologies: [
       Languages.PYTHON,
@@ -78,5 +112,5 @@ export const jobs: Job[] = [
     ],
     startMonth: 'abr. 2021',
     endMonth: 'mar. 2022',
-  }
+  },
 ];
