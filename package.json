@@ -1,0 +1,10 @@
+{
+  "name": "wagner-cardoso-dev",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter site dev",
+    "build": "pnpm --filter site build",
+    "preview": "pnpm --filter site preview"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
