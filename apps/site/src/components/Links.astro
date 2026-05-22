@@ -1,0 +1,48 @@
+---
+import { links } from "../data/links";
+---
+
+<section aria-labelledby="links-heading" class="py-18 border-b border-rule">
+  <div class="flex items-center gap-6 mb-10">
+    <span class="w-2 h-2 bg-accent shrink-0" aria-hidden="true"></span>
+    <h2
+      id="links-heading"
+      class="text-[.8rem] uppercase tracking-[.25em] text-fg-strong font-bold"
+    >
+      Links
+    </h2>
+    <span class="flex-1 h-px bg-rule" aria-hidden="true"></span>
+  </div>
+
+  <ul
+    class="grid grid-cols-1 md:grid-cols-2 gap-px bg-rule border border-rule list-none p-0 m-0"
+  >
+    {
+      links.map((entry) => {
+        const isMailto = entry.href.startsWith("mailto:");
+        const openInNewTab = entry.external && !isMailto;
+        return (
+          <li class="bg-bg p-7 transition-colors duration-150 hover:bg-bg-muted">
+            <a
+              href={entry.href}
+              target={openInNewTab ? "_blank" : undefined}
+              rel={openInNewTab ? "noopener noreferrer" : undefined}
+              class="group flex flex-col gap-2"
+            >
+              <span
+                class="text-[.7rem] uppercase tracking-[.22em] text-fg-muted font-semibold"
+              >
+                {entry.label}
+              </span>
+              <span
+                class="text-[1.2rem] font-semibold tracking-[-.02em] text-fg-strong group-hover:text-accent transition-colors duration-150"
+              >
+                {entry.display}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

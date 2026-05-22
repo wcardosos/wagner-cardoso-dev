@@ -1,10 +1,27 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Agora from "../components/Agora.astro";
+import Stack from "../components/Stack.astro";
+import Projects from "../components/Projects.astro";
+import Links from "../components/Links.astro";
+import Footer from "../components/Footer.astro";
 ---
 
 <BaseLayout
   title="Wagner Cardoso"
-  description="Site pessoal de Wagner Cardoso — engenharia de software."
+  description="Site pessoal de Wagner Cardoso — desenvolvedor backend/fullstack trabalhando com TypeScript, Java/Spring e PostgreSQL."
 >
-  <main></main>
+  <div class="max-w-6xl mx-auto px-6 pt-4 pb-8 md:px-18 md:pt-8 md:pb-18">
+    <Header />
+    <main>
+      <Hero />
+      <Agora />
+      <Stack />
+      <Projects />
+      <Links />
+    </main>
+    <Footer />
+  </div>
 </BaseLayout>

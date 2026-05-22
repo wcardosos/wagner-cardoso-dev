@@ -38,3 +38,25 @@ pnpm --filter site preview # serve o build local
   acontecerá quando o blog for criado.
 - Sem `tailwind.config.js`: toda configuração via `@theme` (Tailwind v4).
 - Identidade dark com accent vermelho, Montserrat como única família tipográfica.
+
+## Deploy
+
+Cloudflare Pages, um projeto por app. Deploy manual via integração Git na v1.
+
+- **Site** → `wagnercardoso.dev`
+  - Root directory: `/` (raiz do repo — necessário para resolver o workspace pnpm)
+  - Build command: `pnpm install --frozen-lockfile && pnpm --filter site build`
+  - Build output directory: `apps/site/dist`
+  - Variáveis de ambiente: nenhuma
+
+### Configuração crítica
+
+- `site` em `apps/site/astro.config.mjs` é a fonte de verdade para URLs absolutas
+  (sitemap, Open Graph, canonical). Se o domínio mudar, atualize lá e em
+  `apps/site/public/robots.txt`.
+- A imagem de Open Graph (`apps/site/public/og-image.png`) é gerada por
+  `pnpm --filter site og:generate`. Regenere localmente e faça commit do PNG
+  quando o texto/identidade mudar — não roda no build.
+- O build cache do Cloudflare deve ficar desligado ou escopado: alterações em
+  `packages/design-system` precisam invalidar o build dos apps consumidores
+  (ver CLAUDE.md).

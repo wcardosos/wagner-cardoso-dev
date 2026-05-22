@@ -1,0 +1,44 @@
+---
+import type { Project } from "../data/projects";
+
+type Props = { project: Project };
+const { project } = Astro.props;
+---
+
+<article class="p-8 bg-bg-muted border-l-[3px] border-accent">
+  <h3 class="text-4xl font-bold tracking-[-.03em] text-fg-strong mb-4">
+    {project.name}
+  </h3>
+  <p class="text-[1.1rem] leading-[1.5] max-w-[55ch] mb-6">
+    {project.description}
+  </p>
+  <div
+    class="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-rule pt-4"
+  >
+    <div class="text-sm">
+      <span class="text-fg-muted">Stack: </span>
+      <span class="text-fg-strong font-medium"
+        >{project.stack.join(" · ")}</span
+      >
+    </div>
+    <span
+      class="text-xs uppercase tracking-[.14em] text-accent font-semibold"
+    >
+      ● {project.status}
+    </span>
+    <div class="flex flex-wrap gap-4 ml-auto">
+      {
+        project.links.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-fg-strong font-semibold border-b border-fg-strong hover:text-accent hover:border-accent transition-colors duration-150"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</article>

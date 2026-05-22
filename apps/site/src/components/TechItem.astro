@@ -1,0 +1,15 @@
+---
+type Props = { name: string; svg: string };
+const { name, svg } = Astro.props;
+
+const cleanSvg = svg
+  .replace(/\sfill="(?!none)[^"]*"/g, "")
+  .replace(/\sstroke="(?!none)[^"]*"/g, "");
+---
+
+<li
+  class="tech-chip inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-fg-muted border border-rule bg-bg-muted transition-colors duration-150 hover:text-accent hover:border-accent"
+>
+  <span class="w-[14px] h-[14px] inline-flex shrink-0" aria-hidden="true" set:html={cleanSvg} />
+  <span>{name}</span>
+</li>

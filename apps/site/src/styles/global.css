@@ -6,6 +6,8 @@
   --color-fg: #e8e6e3;
   --color-fg-muted: #8b8989;
   --color-accent: #e53e3e;
+  --color-fg-strong: #fafaf9;
+  --color-rule: #3a3838;
 
   --font-sans: "Montserrat", system-ui, sans-serif;
 }
@@ -15,4 +17,14 @@ body {
   background-color: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
+}
+
+.tech-chip svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.tech-chip svg * {
+  fill: currentColor;
 }
