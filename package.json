@@ -2,9 +2,17 @@
   "name": "wagner-cardoso-dev",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter site dev",
-    "build": "pnpm --filter site build",
-    "preview": "pnpm --filter site preview"
+    "dev": "pnpm --parallel --filter site --filter blog dev",
+    "dev:site": "pnpm --filter site dev",
+    "dev:blog": "pnpm --filter blog dev",
+
+    "build": "pnpm --filter site build && pnpm --filter blog build",
+    "build:site": "pnpm --filter site build",
+    "build:blog": "pnpm --filter blog build",
+
+    "preview": "pnpm --parallel --filter site --filter blog preview",
+    "preview:site": "pnpm --filter site preview",
+    "preview:blog": "pnpm --filter blog preview"
   },
   "packageManager": "pnpm@9.0.0"
 }
