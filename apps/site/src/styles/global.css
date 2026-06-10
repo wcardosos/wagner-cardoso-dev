@@ -1,23 +1,5 @@
 @import "tailwindcss";
-
-@theme {
-  --color-bg: #262525;
-  --color-bg-muted: #2a2a2c;
-  --color-fg: #e8e6e3;
-  --color-fg-muted: #8b8989;
-  --color-accent: #e53e3e;
-  --color-fg-strong: #fafaf9;
-  --color-rule: #3a3838;
-
-  --font-sans: "Montserrat", system-ui, sans-serif;
-}
-
-html,
-body {
-  background-color: var(--color-bg);
-  color: var(--color-fg);
-  font-family: var(--font-sans);
-}
+@import "@design-system/theme.css";
 
 .tech-chip svg {
   width: 100%;
