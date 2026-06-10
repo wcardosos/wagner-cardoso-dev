@@ -24,6 +24,8 @@ const formattedDate = new Intl.DateTimeFormat("pt-BR", {
 <BaseLayout
   title={`${post.data.title} | Blog`}
   description={post.data.description}
+  image={`/og/${post.id}.png`}
+  ogType="article"
 >
   <article>
     <header class="mb-10">

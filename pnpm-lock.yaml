@@ -13,6 +13,9 @@ importers:
       '@astrojs/mdx':
         specifier: ^4.0.0
         version: 4.3.14(astro@5.18.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(typescript@5.9.3))
+      '@astrojs/sitemap':
+        specifier: ^3.2.1
+        version: 3.7.2
       '@design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
@@ -32,6 +35,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.20
         version: 0.5.20(tailwindcss@4.3.0)
+      sharp:
+        specifier: ^0.34.0
+        version: 0.34.5
 
   apps/site:
     dependencies:

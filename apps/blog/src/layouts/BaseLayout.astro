@@ -9,12 +9,19 @@ import Footer from "../components/Footer.astro";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  ogType?: string;
 }
 
 const {
-  title = "Blog — Wagner Cardoso",
+  title = "Blog | Wagner Cardoso",
   description = "Blog técnico de Wagner Cardoso.",
+  image = "/og-default.png",
+  ogType = "website",
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const imageURL = new URL(image, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -24,6 +31,20 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageURL} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+
     <slot name="head" />
   </head>
   <body class="bg-bg text-fg font-sans">
