@@ -40,14 +40,14 @@ const dateFmt = new Intl.DateTimeFormat("pt-BR", {
   </div>
 
   {posts.length > 0 ? (
-    <ul class="border-t border-rule">
+    <ul class="divide-y divide-rule">
       {posts.map((post) => (
-        <li class="border-b border-rule">
+        <li>
           <a
             href={post.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="group flex items-baseline justify-between gap-4 py-4"
+            class="group flex items-baseline justify-between gap-4 py-5 -mx-2 px-2 hover:bg-bg-muted/40 transition-colors duration-150"
           >
             <span class="text-fg-strong group-hover:text-accent transition-colors duration-150">
               {post.title}

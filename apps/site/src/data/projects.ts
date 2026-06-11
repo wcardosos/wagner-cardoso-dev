@@ -8,12 +8,12 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    name: "rulebox",
+    name: "gitiam",
     description:
-      "CLI para distribuir rules e configs de IDE entre projetos. Convergência de ergonomia entre Cursor, Claude Code e agentes locais.",
+      "CLI para gerenciamento de identidades Git. Agrupa chave SSH, nome e email num perfil único e atômico, alternável com um comando — sem reconfigurar cada contexto manualmente.",
     stack: ["TypeScript", "Node.js"],
     links: [
-      { label: "Repositório", href: "https://github.com/wcardosos/rulebox" },
+      { label: "Repositório", href: "https://github.com/wcardosos/gitiam" },
     ],
     status: "Em desenvolvimento",
   },
