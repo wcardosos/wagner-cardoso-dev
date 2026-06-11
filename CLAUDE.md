@@ -101,3 +101,12 @@ Both use:
 - Build output directory: `apps/<app>/dist`
 
 Build cache should be configured carefully or disabled — changes to `packages/design-system` must invalidate consumer builds.
+
+### Environment variables
+
+Internal deploy domains are externalized via `astro:env` (see each app's `.env.example`). Each Cloudflare Pages project should define its build-time env vars:
+
+- Site → `SITE_URL` (own `site:`) and `PUBLIC_BLOG_URL` (cross-link to the blog).
+- Blog → `BLOG_URL` (own `site:`) and `PUBLIC_SITE_URL` (cross-link to the site).
+
+Without them, the build falls back to the production defaults embedded in each app's `env.schema` / config, so it never breaks. External/content URLs (GitHub, LinkedIn, etc.) stay hard-coded — they don't depend on the environment.

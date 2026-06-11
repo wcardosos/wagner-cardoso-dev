@@ -1,3 +1,5 @@
+import { PUBLIC_BLOG_URL } from "astro:env/client";
+
 export type LinkEntry = {
   label: string;
   display: string;
@@ -9,7 +11,7 @@ export const links: LinkEntry[] = [
   {
     label: "Blog",
     display: "blog.wagnercardoso.dev",
-    href: "https://blog.wagnercardoso.dev",
+    href: PUBLIC_BLOG_URL,
     external: true,
   },
   {
