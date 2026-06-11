@@ -59,3 +59,34 @@
   font-size: 0.9em;
   line-height: 1.6;
 }
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  font-size: 0.95em;
+}
+
+.prose thead th {
+  color: var(--color-fg-strong);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8em;
+  text-align: left;
+  padding: 0 1rem 0.75rem;
+}
+
+.prose tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+}
+
+/* primeira/última célula encostam na margem do texto */
+.prose thead th:first-child,
+.prose tbody td:first-child {
+  padding-left: 0;
+}
+.prose thead th:last-child,
+.prose tbody td:last-child {
+  padding-right: 0;
+}
