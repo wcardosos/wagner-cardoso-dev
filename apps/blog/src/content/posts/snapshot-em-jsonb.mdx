@@ -1,0 +1,60 @@
+---
+title: "Snapshot em JSONB: guardando estado histórico sem duplicar schema"
+date: 2026-07-31
+description: Um relato sobre guardar o estado de uma entidade no instante em que um registro é consolidado, sem versionamento completo nem schema duplicado — usando uma coluna JSONB como dado e sinal ao mesmo tempo.
+---
+
+Um sistema sincroniza entidades de uma fonte externa. Todos os dias, durante a madrugada, um job puxa os dados atualizados e sobrescreve o que está no banco, o famoso "upsert" da informação. Isso funciona muito bem quando precisamos de informação atualizada que vem de outro sistema. Essa abordagem começa a dar dores de cabeça quando o seguinte cenário se faz necessário: registros que se associam à entidade atualizada diariamente e que, em algum momento, **são consolidados** (entendemos _consolidado_ aqui como um processamento que termina, um status que muda, alguma ação no sistema onde o registro é tratado como **definitivo**).
+
+Quando o job de sync roda e atualiza um campo, o registro consolidado, que se associava àquela entidade vai se referenciar com uma nova versão dos dados, ou seja, dados diferente dos que sustentaram o resultado. Não houve alteração no registro, mas o que ele afirma mudou. Esse comportamento não é um bug que estoura em produção com um stack trace bonitinho que mostra com detalhes onde ocorreu o problema. É um problema silencioso que vai aparecer em uma auditoria meses depois, quando alguém vai reconstruir um número e a conta não bate. Esse post tem como objetivo mostrar como cheguei à melhor solução para o problema **no cenário da funcionalidade** para implementar esse mecanismo de **snapshots**.
+
+# O que não funcionou
+
+Antes de chegar na solução, foram analisadas diversas opções de solução. Abaixo vou descrever as que mais se destacaram.
+
+## Cópia do estado
+
+Sempre ao rodar e sobrescrever os dados, guardar o valor anterior a essa atualização. Isso preserva o histórico como um todo, mas há um problema nessa abordagem: todo o histórico seria armazenado, sendo que a solução pedia apenas um instante específico, no momento da consolidação. Copiar a cada atualização responde uma pergunta muito mais ampla: _como isso estava antes de cada mudança?_ Como você pode ver, a pergunta que eu precisava era algo como _como isso estava quando tal ação ocorreu?_
+
+Além disso, guardar uma serie de versões não cabe numa coluna: exigiria uma tabela de revisões ou um JSON acumulando estados a cada sync diário. Por esses pontos essa opção foi **descartada**.
+
+## Tabela de histórico
+
+Relacionada com a opção anterior. Parece certo em um primeiro momento, mas pensando a longo prazo essa solução não envelhece bem. Essa tabela necessita ser exatamente igual a tabela original a nível de _schema_ no banco de dados. Com isso surge um problema sério: manter dois _schemas_ sincronizados manualmente. Toda coluna nova na tabela original é uma _migration_ que alguém precisa lembrar de replicar na tabela de histórico. Até funciona por um tempo, mas o projeto vai crescendo, a equipe mudando, e com isso a chance de alguém adicionar um campo com pressa na tabela original e esquecer de replicar na tabela é bem alta. Uma falha como essa gera _snapshots_ incompletos, e o pior: em erro, sem alerta, só uma coluna faltando que ninguém percebe até precisar dela.
+
+## Ferramenta de auditoria
+
+No projeto que eu estava trabalhando já existia um mecanismo de auditoria, que era o [Hibernate Envers](https://hibernate.org/orm/envers/), que como a própria documentação é _uma maneira fácil de adicionar auditoria/controle de versão para entidades_ no [ORM Hibernate](https://hibernate.org/orm/). Basicamente em cada ação no sistema é guardada um registro em uma tabela própria onde era possível adicionar uma coluna de metadados que poderia conter o _snapshot_ da entidade. Contudo, o objetivo da auditoria é registrar **quem fez a alteração**, ou seja, o usuário responsável pela ação. No fluxo que estava sendo desenvolvido não havia uma ação manual de usuário que disparava a gravação do _snapshot_. Usar Envers como fonte do _snapshot_ obrigaria a inventar um autor (um `system`, um `admin` genérico) que iria poluir revisões de auditoria, pois o responsável seria esse autor inventado. Resumindo: auditoria e versionamento são problemas **diferentes**.
+
+# A solução
+
+Antes de mais nada, um aviso importante:
+
+> [!WARNING]
+> Enfrentei esse problema no trabalho e achei uma solução relevante para o problema. Não é a melhor solução de todas, mas foi **a melhor para o meu cenário**. Vou detalhar ela abaixo.
+
+Com isso em mente, vamos prosseguir. O momento da consolidação é o único instante em que o sistema sabe qual estado importa preservar. Antes dele, não dá para saber: o vínculo pode ser desfeito, o registro pode nunca ser consolidado, a entidade pode mudar dez vezes sem que nada disso tenha consequência. Depois da consolidação, é tarde: o sync já pode ter passado e sobrescrito o dado. O instante da consolidação é o ponto exato onde o estado ainda está correto e já se sabe que ele importa. Então o _snapshot_ acontece ali. Quando o registro é consolidado, o sistema percorre as linhas da _join table_ daquele registro e grava, em cada uma, o estado atual da entidade associada. Uma operação, uma transação, todas as linhas atualizadas de uma vez.
+
+O _snapshot_ vai para uma coluna JSONB nullable na própria join table, a tabela que já relacionava o registro à entidade. Não há tabela nova, não há entidade nova. A linha que já existia para representar o vínculo ganha um campo a mais. Essa solução dá duas funções ao mesmo tempo para a coluna:
+
+1. guarda o estado da entidade no instante da consolidação (obviamente)
+2. a sua existência é o sinal de qual caminho de leitura seguir. Quando o registro foi consolidado, a coluna está preenchida; quando está nula, o registro ainda não foi consolidado e a leitura deve ser na tabela original. Não existe cópia congelada.
+
+## O que foi bom para a aplicação
+
+O ganho não é de armazenamento — é de simplicidade. Consolidar e preservar deixam de ser duas coisas. Não existe um processo separado varrendo o banco atrás de registros consolidados, nem uma verificação a cada sync perguntando se aquela entidade virou histórica para alguém. E o outro lado da mesma escolha: **o job de sincronização não mudou**. Nenhuma linha. Ele continua puxando dados e sobrescrevendo a tabela original como sempre fez, sem saber que _snapshot_ existe, sem verificar o status de ninguém. A feature inteira ficou contida em dois lugares — o caminho que consolida o registro e o caminho que lê os dados para exibição. Entidades associadas a registros ainda não consolidados não recebem cópia nenhuma. Continuam sendo lidas direto da tabela original, como sempre foram.
+
+Outro ponto importante é que o _snapshot_ é imutável — uma vez gravado, ele nunca mais muda. Se a entidade ganhar uma coluna nova amanhã, os _snapshots_ gravados hoje não a terão, e nunca terão, pois o _snapshot_ reflete como o registro associado estava no momento da consolidação.
+
+## Trade-offs do JSONB
+
+O JSONB resolve o mesmo problema que fez a tabela de histórico ser descartada na fase de análise: o _snapshot_ precisa carregar o estado inteiro da entidade sem replicar o schema dela em outro lugar. Uma coluna JSONB absorve esse estado como um bloco só. Se a entidade ganha um campo novo, o _snapshot_ seguinte já o inclui, sem _migration_ no lado do _snapshot_, sem duas definições para manter em acordo. Isso é muito bom, contudo, dentro do JSONB, **o banco não valida nada**: um campo com tipo trocado, um campo faltando, um nome errado — tudo passa na escrita e só vai aparecer na leitura.
+
+No fim, foi trocar uma garantia estrutural (_schema_ validado pelo banco) por uma garantia que passa a viver na aplicação, coberta por testes. Não é uma troca grátis, e não é sempre a certa. Foi a certa aqui porque a alternativa era manter dois schemas sincronizados na mão, e schema duplicado mantido por disciplina humana falha de um jeito silencioso que eu já sabia que não queria.
+
+# Lições aprendidas
+
+Nada disso é um padrão para utilizar sempre que aparecer uma feature de "histórico". Funcionou naquele problema por causa de coisas específicas dele, e vale mais recolher quais foram do que transformar a solução em receita.
+A pergunta era sobre um instante único e conhecido e não sobre todo o histórico da entidade. Isso é o que dispensou versionamento de verdade. Se eu precisasse reconstruir qualquer ponto no tempo, e não só aquele, a conversa seria outra: uma tabela de histórico provavelmente seria a melhor opção.
+
+No fim, o que fez a solução ser numa coluna nova na _join table_ foi o problema ser mais estreito do que parecia à primeira vista. A tentação era construir versionamento; o que se precisava era guardar um estado num momento conhecido. Reconhecer esse escopo real e resistir a resolver o problema maior que ninguém tinha foi o que permitiu que a resposta fosse pequena.
