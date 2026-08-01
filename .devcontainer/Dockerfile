@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:20
+FROM mcr.microsoft.com/devcontainers/typescript-node:22
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 

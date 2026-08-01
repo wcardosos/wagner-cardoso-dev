@@ -2,6 +2,7 @@ import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import remarkAlerts from "./remark/remark-alerts.mjs";
 
 export default defineConfig({
   site: process.env.BLOG_URL ?? "https://blog.wagnercardoso.dev",
@@ -15,6 +16,9 @@ export default defineConfig({
       }),
     },
   },
-  markdown: { shikiConfig: { theme: "dracula", wrap: true } },
+  markdown: {
+    remarkPlugins: [remarkAlerts],
+    shikiConfig: { theme: "dracula", wrap: true },
+  },
   vite: { plugins: [tailwindcss()] },
 });
