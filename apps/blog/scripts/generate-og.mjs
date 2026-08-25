@@ -4,7 +4,12 @@ import { readdir, readFile, mkdir } from "node:fs/promises";
 import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const postsDir = resolve(__dirname, "..", "src", "content", "posts");
+// Posts live in the shared content package (packages/content/posts) since
+// Task 003 migrated them out of apps/blog/src/content/posts. Resolved
+// relative to this script's own file, mirroring the care taken in
+// packages/content/src/collection.ts's `postsDir` (see Task 000 notes),
+// so this keeps working regardless of the consuming app's cwd.
+const postsDir = resolve(__dirname, "..", "..", "..", "packages", "content", "posts");
 const ogDir = resolve(__dirname, "..", "public", "og");
 const defaultPath = resolve(__dirname, "..", "public", "og-default.png");
 

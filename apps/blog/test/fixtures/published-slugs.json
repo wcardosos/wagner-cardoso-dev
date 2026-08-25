@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-08-21",
+  "note": "Ground-truth snapshot of published post slugs, captured before the Task 003 migration moved MDX files from apps/blog/src/content/posts/ to packages/content/posts/. Slugs are derived from filename (minus extension). Guards RF-004 / R-001 (docs/specs/001).",
+  "slugs": [
+    "minha-jornada-como-desenvolvedor",
+    "notacao-big-o-e-suas-regras",
+    "snapshot-em-jsonb"
+  ]
+}
