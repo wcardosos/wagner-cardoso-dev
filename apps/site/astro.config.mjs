@@ -1,10 +1,11 @@
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: process.env.SITE_URL ?? "https://wagnercardoso.dev",
-  integrations: [sitemap()],
+  integrations: [mdx(), sitemap()],
   env: {
     schema: {
       PUBLIC_BLOG_URL: envField.string({

@@ -12,7 +12,9 @@
 
     "preview": "pnpm --parallel --filter site --filter blog preview",
     "preview:site": "pnpm --filter site preview",
-    "preview:blog": "pnpm --filter blog preview"
+    "preview:blog": "pnpm --filter blog preview",
+
+    "check:boundaries": "node scripts/check-boundaries.mjs"
   },
   "packageManager": "pnpm@9.0.0"
 }

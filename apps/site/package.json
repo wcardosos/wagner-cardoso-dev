@@ -10,7 +10,9 @@
     "og:generate": "node scripts/generate-og.mjs"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
     "@astrojs/sitemap": "^3.2.1",
+    "@content/content": "workspace:*",
     "@design-system": "workspace:*",
     "@fontsource/montserrat": "^5.1.0",
     "@tailwindcss/vite": "^4.0.0",

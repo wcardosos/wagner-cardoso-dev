@@ -1,13 +1,8 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
+import { postsCollection } from "@content/content";
 
-const posts = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    description: z.string(),
-  }),
-});
-
-export const collections = { posts };
+// The schema and loader live in packages/content (DC-001, Task 000). The
+// blog declares no schema of its own — this registration only wires the
+// "posts" key to the package's collection. Post MDX files live under
+// packages/content/posts/ (migrated there by Task 003); the blog no longer
+// has a local src/content/posts directory.
+export const collections = { posts: postsCollection };

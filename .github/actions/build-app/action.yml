@@ -1,0 +1,85 @@
+name: "Build app"
+description: >-
+  Builds a single app (site or blog): Node/pnpm setup, pnpm-lock.yaml-keyed
+  cache restore, `pnpm install --frozen-lockfile`, optional checks
+  (typecheck + boundary check), and `pnpm --filter <app> build`. Never
+  deploys, never touches secrets.
+
+inputs:
+  app:
+    description: "site | blog"
+    required: true
+  run-checks:
+    description: "Run typecheck and boundary checks in addition to the build"
+    required: false
+    default: "false"
+
+outputs:
+  artifact-path:
+    description: "Path to the built output directory"
+    value: ${{ steps.resolve-output.outputs.artifact-path }}
+
+runs:
+  using: "composite"
+  steps:
+    # Pinned to Node 22, matching astro@5's
+    # own `engines.node` lower bound (">=22.0.0") from
+    # node_modules/astro/package.json.
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    # Cache restore keyed on pnpm-lock.yaml's hash.
+    # Computed via `pnpm store path` rather than a hardcoded path so the
+    # cache location stays correct regardless of runner OS or pnpm's
+    # default store location.
+    - name: Resolve pnpm store directory
+      id: pnpm-store
+      shell: bash
+      run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+    - name: Restore pnpm store cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-store.outputs.path }}
+        key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          pnpm-store-${{ runner.os }}-
+
+    # a lockfile drift (a declared dependency missing from
+    # pnpm-lock.yaml) fails here, before any check or build step runs.
+    - name: Install dependencies (frozen lockfile)
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    # Optional checks (run-checks input, default 'false'). Both checks run
+    # only when requested, and both complete before the build step below.
+    #
+    # Typecheck: both apps already have their own `tsconfig.json`
+    # (`extends: astro/tsconfigs/strict`), so `tsc --noEmit -p apps/<app>`
+    # typechecks the app for real using the TypeScript already resolvable
+    # via `pnpm exec` — no new dependency required.
+    - name: Typecheck
+      if: ${{ inputs.run-checks == 'true' }}
+      shell: bash
+      run: pnpm exec tsc --noEmit -p apps/${{ inputs.app }}
+
+    # Boundary check (established in US-001 Task 004): a root-level script
+    # that scans the whole tree, not scoped per app.
+    - name: Check boundaries
+      if: ${{ inputs.run-checks == 'true' }}
+      shell: bash
+      run: pnpm check:boundaries
+
+    - name: Build
+      shell: bash
+      run: pnpm --filter ${{ inputs.app }} build
+
+    - id: resolve-output
+      name: Resolve build output path
+      shell: bash
+      run: echo "artifact-path=apps/${{ inputs.app }}/dist" >> "$GITHUB_OUTPUT"

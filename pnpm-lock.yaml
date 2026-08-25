@@ -16,6 +16,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.2.1
         version: 3.7.2
+      '@content/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
@@ -41,9 +44,15 @@ importers:
 
   apps/site:
     dependencies:
+      '@astrojs/mdx':
+        specifier: ^4.0.0
+        version: 4.3.14(astro@5.18.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(typescript@5.9.3))
       '@astrojs/sitemap':
         specifier: ^3.2.1
         version: 3.7.2
+      '@content/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
@@ -69,6 +78,12 @@ importers:
       sharp:
         specifier: ^0.34.0
         version: 0.34.5
+
+  packages/content:
+    devDependencies:
+      astro:
+        specifier: ^5.0.0
+        version: 5.18.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(typescript@5.9.3)
 
   packages/design-system: {}
 
