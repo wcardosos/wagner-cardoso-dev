@@ -1,23 +1,17 @@
 ---
 import { PUBLIC_BLOG_URL } from "astro:env/client";
+import { getRecentPosts } from "@content/content";
 
-interface RecentPost {
-  slug: string;
-  title: string;
-  date: string;
-  description: string;
-  url: string;
-}
+const posts = await getRecentPosts(5);
 
-const BLOG_URL = PUBLIC_BLOG_URL;
-const ENDPOINT = `${PUBLIC_BLOG_URL}/api/recent-posts.json`;
-
-let posts: RecentPost[] = [];
-try {
-  const res = await fetch(ENDPOINT);
-  if (res.ok) posts = await res.json();
-} catch {
-  posts = []; // fallback — build nunca quebra
+// C-3 (docs/specs/002/task-000.md): zero posts is a fatal build state, not a
+// renderable empty state. No placeholder copy, no conditional hiding of the
+// section — the build must fail loudly instead.
+if (posts.length === 0) {
+  throw new Error(
+    "Escrita section requires at least one post, but getRecentPosts(5) " +
+      "returned none. Add at least one post under packages/content/posts."
+  );
 }
 
 const dateFmt = new Intl.DateTimeFormat("pt-BR", {
@@ -39,35 +33,31 @@ const dateFmt = new Intl.DateTimeFormat("pt-BR", {
     <span class="flex-1 h-px bg-rule" aria-hidden="true"></span>
   </div>
 
-  {posts.length > 0 ? (
-    <ul class="divide-y divide-rule">
-      {posts.map((post) => (
-        <li>
-          <a
-            href={post.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-baseline justify-between gap-4 py-5 -mx-2 px-2 hover:bg-bg-muted/40 transition-colors duration-150"
+  <ul class="divide-y divide-rule">
+    {posts.map((post) => (
+      <li>
+        <a
+          href={`${PUBLIC_BLOG_URL}/${post.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-baseline justify-between gap-4 py-5 -mx-2 px-2 hover:bg-bg-muted/40 transition-colors duration-150"
+        >
+          <span class="text-fg-strong group-hover:text-accent transition-colors duration-150">
+            {post.title}
+          </span>
+          <time
+            datetime={post.date.toISOString()}
+            class="shrink-0 text-sm uppercase tracking-[.14em] text-fg-muted"
           >
-            <span class="text-fg-strong group-hover:text-accent transition-colors duration-150">
-              {post.title}
-            </span>
-            <time
-              datetime={post.date}
-              class="shrink-0 text-sm uppercase tracking-[.14em] text-fg-muted"
-            >
-              {dateFmt.format(new Date(post.date))}
-            </time>
-          </a>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p class="text-fg-muted">Em breve, posts por aqui.</p>
-  )}
+            {dateFmt.format(post.date)}
+          </time>
+        </a>
+      </li>
+    ))}
+  </ul>
 
   <a
-    href={BLOG_URL}
+    href={PUBLIC_BLOG_URL}
     class="mt-6 inline-block text-sm text-accent underline underline-offset-4 hover:text-fg-strong transition-colors duration-150"
   >
     Ver tudo →
