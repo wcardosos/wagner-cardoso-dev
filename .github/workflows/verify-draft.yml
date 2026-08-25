@@ -1,0 +1,23 @@
+name: Verify Draft
+
+on:
+  push:
+    branches: ["post/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [site, blog]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-app
+        with:
+          app: ${{ matrix.app }}
+          run-checks: "true"

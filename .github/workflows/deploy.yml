@@ -1,0 +1,189 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "**/README.md"
+      - "docs/**"
+      - ".vscode/**"
+      - ".editorconfig"
+      - "LICENSE"
+      - ".gitignore"
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Which app(s) to deploy"
+        type: choice
+        options: [site, blog, both]
+        default: both
+        required: true
+
+jobs:
+  detect:
+    name: Detect affected apps
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.resolve.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history, so github.event.before (the pre-push tip of main)
+          # is guaranteed to be present locally to diff against — a default
+          # shallow (depth-1) checkout would not have it.
+          fetch-depth: 0
+
+      - id: diff
+        name: List changed paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.before }}"
+          HEAD="${{ github.sha }}"
+          EMPTY_SHA="0000000000000000000000000000000000000000"
+          if [ "$BASE" = "$EMPTY_SHA" ]; then
+            # New branch / first-ever push: nothing to diff against, so
+            # every path in HEAD counts as changed.
+            BASE="$(git hash-object -t tree /dev/null)"
+          fi
+          git diff --name-only "$BASE" "$HEAD" > "$RUNNER_TEMP/changed-paths.txt"
+          echo "Changed paths in this push:"
+          cat "$RUNNER_TEMP/changed-paths.txt"
+
+      - id: resolve
+        name: Resolve affected apps
+        shell: bash
+        run: node .github/scripts/resolve-affected-apps.mjs < "$RUNNER_TEMP/changed-paths.txt"
+
+  build:
+    name: Build (${{ matrix.app }})
+    needs: [detect]
+    # `!cancelled()` lets this job run when `detect` was skipped (any
+    # non-push trigger: the `app` input IS
+    # the affected set, no detection needed). The added right-hand clause
+    # is a Task 003 correctness fix (see "Decisions Recorded" in
+    # task-003.md): once this job's matrix is wired from
+    # `needs.detect.outputs.apps` (below), a *failed* (not skipped) detect
+    # job on a push trigger would otherwise leave that output undefined and
+    # crash the matrix expression instead of cleanly skipping `build`.
+    if: ${{ !cancelled() && (github.event_name != 'push' || needs.detect.result == 'success') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(github.event_name == 'push' && needs.detect.outputs.apps || (github.event.inputs.app == 'both' && '["site","blog"]' || format('["{0}"]', github.event.inputs.app))) }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: build
+        uses: ./.github/actions/build-app
+        with:
+          app: ${{ matrix.app }}
+          run-checks: "true"
+
+      # Deploy consumes this artifact instead of rebuilding. Short retention: only needed within this
+      # same workflow run.
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.app }}
+          path: ${{ steps.build.outputs.artifact-path }}
+          retention-days: 1
+
+  deploy:
+    name: Deploy (${{ matrix.app }})
+    needs: [detect, build]
+    # The gate is this `needs` dependency plus an explicit success check. Confirmed unchanged
+    # and still correct with the matrix added below: `needs.build.result` reflects
+    # the whole matrix (any failed leg makes it `failure`, regardless of
+    # `fail-fast`), so one broken build still blocks every deploy leg,
+    # including the ones for apps whose own build succeeded.
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    strategy:
+      # fail-fast: false — each app's deploy (with its own retry-once) must
+      # run to completion independently. A site deploy that already
+      # succeeded must never be cancelled mid-retry just because the blog
+      # leg failed.
+      fail-fast: false
+      matrix:
+        # Same affected-app set as `build`'s matrix — see the comment
+        # there. Deploys exactly the apps that were built, never more.
+        app: ${{ fromJSON(github.event_name == 'push' && needs.detect.outputs.apps || (github.event.inputs.app == 'both' && '["site","blog"]' || format('["{0}"]', github.event.inputs.app))) }}
+    # Secrets referenced only in this job;
+    # verify-draft.yml references none (re-checked, still true as of this
+    # task). Referenced solely via `env:` below and consumed by wrangler
+    # through its own documented env var names — never interpolated into a
+    # `run:`/`echo`/`::notice::` string, so nothing can leak into logs.
+    # GitHub Actions also auto-masks any `secrets.*` value that reaches a
+    # log line as a further backstop.
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Preflight required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            missing+=("CLOUDFLARE_API_TOKEN")
+          fi
+          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            missing+=("CLOUDFLARE_ACCOUNT_ID")
+          fi
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing required secret(s): ${missing[*]}. Configure them as repository secrets before deploying." >&2
+            exit 1
+          fi
+          echo "Required Cloudflare secrets are present."
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ matrix.app }}
+          path: dist
+
+      - id: project
+        name: Resolve Cloudflare Pages project name
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ matrix.app }}" in
+            site) echo "name=wagner-cardoso-dev-site" >> "$GITHUB_OUTPUT" ;;
+            blog) echo "name=wagner-cardoso-dev-blog" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "::error::Unknown app '${{ matrix.app }}' — no Cloudflare Pages project mapping." >&2
+              exit 1
+              ;;
+          esac
+
+      - id: deploy
+        name: Deploy to Cloudflare Pages
+        shell: bash
+        run: |
+          set -uo pipefail
+          attempt=1
+          max_attempts=2
+          while true; do
+            if npx --yes wrangler@4.125.0 pages deploy dist --project-name "${{ steps.project.outputs.name }}" --branch main; then
+              echo "Deployed ${{ matrix.app }} successfully (attempt $attempt)."
+              echo "## Deployed: ${{ matrix.app }}" >> "$GITHUB_STEP_SUMMARY"
+              break
+            fi
+            status=$?
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::Deploy of ${{ matrix.app }} failed after $attempt attempt(s) (exit $status)."
+              {
+                echo "## Deploy failed: ${{ matrix.app }}"
+                echo ""
+                echo "**${{ matrix.app }} is stale** — its last successful deploy predates this push."
+                echo ""
+                echo "Remedy: re-run this workflow via \"Run workflow\" (workflow_dispatch), selecting **${{ matrix.app }}** (or **both**), once the underlying failure is fixed."
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit "$status"
+            fi
+            echo "::warning::Deploy of ${{ matrix.app }} failed on attempt $attempt (exit $status); retrying once."
+            attempt=$((attempt + 1))
+          done

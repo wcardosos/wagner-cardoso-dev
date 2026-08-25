@@ -4,21 +4,21 @@
  *
  * Mechanism: plain, dependency-free Node script (fs + regex/text scanning).
  *
- * Why not dependency-cruiser (suggested first in docs/specs/001/task-004.md)?
+ * Why not dependency-cruiser?
  * dependency-cruiser reasons about the *module dependency graph* — import/
  * require edges between files. All four constraints enforced here are about
  * *file content*, not graph edges:
- *   - DC-001 (US-001) asks "does this call site pass a `schema` argument?"
+ *   - "does this call site pass a `schema` argument?"
  *     — a question about a function call's arguments, which no dependency
  *     graph tool can see.
- *   - DC-002 (US-001) asks "does this file contain an `http(s)://` string
+ *   - does this file contain an `http(s)://` string
  *     literal?" — a content scan, not an edge between modules.
- *   - no-app-to-app (US-002) is graph-shaped in principle, but the specifier
+ *   - no-app-to-app is graph-shaped in principle, but the specifier
  *     text pattern it looks for (a relative import whose path, once dot
  *     segments are stripped, reaches into a sibling apps/* directory) is
  *     cheaper to match as text than to wire up a resolver for.
- *   - no-build-fetch-for-content (US-002) asks "does this build-time module
- *     call `fetch(`?" — a content scan, same shape as DC-002.
+ *   - no-build-fetch-for-content asks "does this build-time module
+ *     call `fetch(`?" — a content scan.
  * Forcing any of these into dependency-cruiser would mean writing a custom
  * reporter that re-parses file contents anyway, at which point the tool
  * contributes nothing but a config format to learn.
@@ -26,42 +26,26 @@
  * Why not ESLint? A full ESLint setup (config, parser, plugin resolution)
  * is a heavyweight way to answer a handful of narrow, one-off structural
  * questions that a few dozen lines of Node can answer directly, with no new
- * dependency and no config-format indirection. Per task-004.md's own
- * instruction: "choose the cheapest mechanism that fails the build."
- *
- * A NOTE ON RULE-ID COLLISION: US-001 (docs/specs/001) and US-002
- * (docs/specs/002) both independently number their design constraints
- * "DC-001" and "DC-002" — but they are different rules from different
- * stories. To keep violation output unambiguous, every violation printed
- * by this script is labeled with both the originating story and a
- * disambiguating rule name, e.g. "DC-001 (US-001)" for the schema rule vs.
- * "US-002 DC-001 (no-app-to-app)" for the app-boundary rule below. See
- * docs/specs/002/task-002.md and docs/specs/002/task-000.md C-5.
+ * dependency and no config-format indirection.
  *
  * What this script does:
- *   DC-001 (US-001) — walks apps/** and packages/** (excluding
+ *   walks apps/** and packages/** (excluding
  *            packages/content itself, which is the one place a schema
  *            declaration is legitimate), finds every `defineCollection(...)`
  *            call, and fails if the call's argument list contains a
  *            `schema` key.
- *   DC-002 (US-001) — walks packages/content/src/** (posts/*.mdx bodies are
+ *   walks packages/content/src/** (posts/*.mdx bodies are
  *            exempt by design — a post may link anywhere) and fails if any
  *            file contains an absolute `http://` or `https://` string
  *            literal.
- *   no-app-to-app (US-002 DC-001) — walks apps/**, and for every file finds
+ *   no-app-to-app — walks apps/**, and for every file finds
  *            import/require/dynamic-import specifiers. A relative specifier
  *            that, once its leading `./`/`../` segments are stripped, starts
  *            with the name of a *different* apps/* directory is a violation
  *            (e.g. `apps/site/...` importing `../../blog/src/content.config`).
  *            Shared code must travel through packages/ instead.
- *   no-build-fetch-for-content (US-002 DC-002) — scoped to apps/site/src
- *            only, per task-002.md's own instruction to target the site's
- *            build path (the blog's removed endpoint called `getCollection`,
- *            not `fetch`, so it was never the target; this repo currently
- *            has no client-hydrated islands to exempt, so `.astro`
- *            frontmatter — the build-time part of the file — and whole
- *            `.ts`/`.js`/`.mjs` files under apps/site/src are scanned for
- *            any `fetch(` call). If apps/site ever gains a client island,
+ *   no-build-fetch-for-content — scoped to apps/site/src
+ *            only. If apps/site ever gains a client island,
  *            this scope must be revisited so client-side fetches aren't
  *            swept in.
  *
@@ -88,7 +72,14 @@ const EXCLUDED_DIR_NAMES = new Set([
   "coverage",
 ]);
 
-const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".astro", ".js", ".mjs", ".cjs"]);
+const SOURCE_EXTENSIONS = new Set([
+  ".ts",
+  ".tsx",
+  ".astro",
+  ".js",
+  ".mjs",
+  ".cjs",
+]);
 
 /**
  * Recursively collect files under `dir` whose extension is in
@@ -179,7 +170,9 @@ function checkDC001() {
     if (!source.includes("defineCollection(")) continue;
 
     const calls = extractCallArgs(source, "defineCollection");
-    const hasSchemaArg = calls.some((argsText) => /\bschema\s*:/.test(argsText));
+    const hasSchemaArg = calls.some((argsText) =>
+      /\bschema\s*:/.test(argsText),
+    );
 
     if (hasSchemaArg) {
       violations.push({
@@ -214,7 +207,8 @@ function checkDC002() {
       violations.push({
         constraint: "DC-002 (US-001)",
         file: toRepoRelative(absPath),
-        message: `Absolute URL literal "${match[0]}" found in packages/content/src. ` +
+        message:
+          `Absolute URL literal "${match[0]}" found in packages/content/src. ` +
           "The package must stay URL-agnostic; the consuming app supplies the base URL via env var (see docs/specs/001/overview.md).",
       });
     }
@@ -298,8 +292,7 @@ function checkNoAppToApp() {
             file: relPath,
             message:
               `Imports "${spec}", which reaches into sibling app "apps/${otherApp}" from ` +
-              `"apps/${currentApp}". Shared code must travel through packages/ instead ` +
-              "(see docs/specs/002/task-000.md C-5).",
+              `"apps/${currentApp}". Shared code must travel through packages/ instead `,
           });
         }
       }
@@ -335,7 +328,9 @@ function checkNoBuildFetchForContent() {
 
   for (const absPath of files) {
     const source = readFileSync(absPath, "utf8");
-    const scanned = absPath.endsWith(".astro") ? extractAstroFrontmatter(source) : source;
+    const scanned = absPath.endsWith(".astro")
+      ? extractAstroFrontmatter(source)
+      : source;
 
     if (fetchCallPattern.test(scanned)) {
       violations.push({
@@ -343,8 +338,7 @@ function checkNoBuildFetchForContent() {
         file: toRepoRelative(absPath),
         message:
           "Build-time module calls fetch(). The site must read posts in-process via " +
-          "getRecentPosts() from @content/content, not over the network at build time " +
-          "(see docs/specs/002/task-000.md C-5 and RNF-001).",
+          "getRecentPosts() from @content/content, not over the network at build time",
       });
     }
   }
@@ -363,12 +357,14 @@ function main() {
   if (violations.length === 0) {
     console.log(
       "check:boundaries — OK (DC-001 US-001, DC-002 US-001, no-app-to-app US-002, " +
-        "no-build-fetch-for-content US-002 satisfied)"
+        "no-build-fetch-for-content US-002 satisfied)",
     );
     return 0;
   }
 
-  console.error(`check:boundaries — FAILED (${violations.length} violation(s))\n`);
+  console.error(
+    `check:boundaries — FAILED (${violations.length} violation(s))\n`,
+  );
   for (const v of violations) {
     console.error(`[${v.constraint}] ${v.file}`);
     console.error(`  ${v.message}\n`);

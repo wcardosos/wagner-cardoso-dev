@@ -4,13 +4,12 @@ import { getRecentPosts } from "@content/content";
 
 const posts = await getRecentPosts(5);
 
-// C-3 (docs/specs/002/task-000.md): zero posts is a fatal build state, not a
-// renderable empty state. No placeholder copy, no conditional hiding of the
-// section — the build must fail loudly instead.
+// zero posts is a fatal build state, not a renderable empty state. No placeholder
+// copy, no conditional hiding of the section — the build must fail loudly instead.
 if (posts.length === 0) {
   throw new Error(
     "Escrita section requires at least one post, but getRecentPosts(5) " +
-      "returned none. Add at least one post under packages/content/posts."
+      "returned none. Add at least one post under packages/content/posts.",
   );
 }
 
@@ -34,26 +33,28 @@ const dateFmt = new Intl.DateTimeFormat("pt-BR", {
   </div>
 
   <ul class="divide-y divide-rule">
-    {posts.map((post) => (
-      <li>
-        <a
-          href={`${PUBLIC_BLOG_URL}/${post.slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group flex items-baseline justify-between gap-4 py-5 -mx-2 px-2 hover:bg-bg-muted/40 transition-colors duration-150"
-        >
-          <span class="text-fg-strong group-hover:text-accent transition-colors duration-150">
-            {post.title}
-          </span>
-          <time
-            datetime={post.date.toISOString()}
-            class="shrink-0 text-sm uppercase tracking-[.14em] text-fg-muted"
+    {
+      posts.map((post) => (
+        <li>
+          <a
+            href={`${PUBLIC_BLOG_URL}/${post.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-baseline justify-between gap-4 py-5 -mx-2 px-2 hover:bg-bg-muted/40 transition-colors duration-150"
           >
-            {dateFmt.format(post.date)}
-          </time>
-        </a>
-      </li>
-    ))}
+            <span class="text-fg-strong group-hover:text-accent transition-colors duration-150">
+              {post.title}
+            </span>
+            <time
+              datetime={post.date.toISOString()}
+              class="shrink-0 text-sm uppercase tracking-[.14em] text-fg-muted"
+            >
+              {dateFmt.format(post.date)}
+            </time>
+          </a>
+        </li>
+      ))
+    }
   </ul>
 
   <a
