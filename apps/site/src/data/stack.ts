@@ -15,6 +15,7 @@ import dockerSvg from "devicon/icons/docker/docker-plain.svg?raw";
 import gitSvg from "devicon/icons/git/git-plain.svg?raw";
 import githubActionsSvg from "devicon/icons/githubactions/githubactions-plain.svg?raw";
 import linuxSvg from "devicon/icons/linux/linux-plain.svg?raw";
+import awsSvg from "devicon/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg?raw";
 
 export type TechItem = { name: string; svg: string };
 export type StackCategory = { name: string; items: TechItem[] };
@@ -52,6 +53,7 @@ export const stack: StackCategory[] = [
     name: "Infra & DevOps",
     items: [
       { name: "Docker", svg: dockerSvg },
+      { name: "AWS", svg: awsSvg },
       { name: "Git", svg: gitSvg },
       { name: "GitHub Actions", svg: githubActionsSvg },
       { name: "Linux", svg: linuxSvg },
