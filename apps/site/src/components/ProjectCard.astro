@@ -17,14 +17,11 @@ const { project } = Astro.props;
   >
     <div class="text-sm">
       <span class="text-fg-muted">Stack: </span>
-      <span class="text-fg-strong font-medium"
-        >{project.stack.join(" · ")}</span
+      <span class="text-fg-strong font-medium">{project.stack.join(" · ")}</span
       >
     </div>
-    <span
-      class="text-xs uppercase tracking-[.14em] text-accent font-semibold"
-    >
-      ● {project.status}
+    <span class="text-xs uppercase tracking-[.14em] text-accent font-semibold">
+      {project.status === "Publicado" ? project.status : `● ${project.status}`}
     </span>
     <div class="flex flex-wrap gap-4 ml-auto">
       {

@@ -15,6 +15,6 @@ export const projects: Project[] = [
     links: [
       { label: "Repositório", href: "https://github.com/wcardosos/gitiam" },
     ],
-    status: "Em desenvolvimento",
+    status: "Publicado",
   },
 ];
