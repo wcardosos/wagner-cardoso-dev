@@ -62,13 +62,15 @@ const UMAMI_PRODUCTION_HOSTNAME = "blog.wagnercardoso.dev";
         script.defer = true;
         script.src = UMAMI_SCRIPT_URL;
         script.setAttribute("data-website-id", UMAMI_WEBSITE_ID);
-        // Site and blog share one website ID, so their paths share a namespace:
-        // prefix blog paths to keep `/` here from colliding with the site's `/`.
+        // Site and blog share one website ID, so prefix blog paths to keep `/`
+        // here from colliding with the site's `/`. The tracker's own props.url
+        // is an absolute URL, so build the path from location instead.
         script.setAttribute("data-auto-track", "false");
         script.addEventListener("load", () => {
+          const { pathname, search } = window.location;
           window.umami?.track((props) => ({
             ...props,
-            url: "/blog" + props.url,
+            url: "/blog" + pathname + search,
           }));
         });
         document.head.appendChild(script);
