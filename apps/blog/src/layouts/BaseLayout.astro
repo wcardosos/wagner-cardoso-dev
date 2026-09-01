@@ -22,6 +22,10 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 const imageURL = new URL(image, Astro.site).toString();
+
+const UMAMI_WEBSITE_ID = "556b1130-7a88-4ff0-b630-709048911871";
+const UMAMI_SCRIPT_URL = "https://u.wagnercardoso.dev/script.js";
+const UMAMI_PRODUCTION_HOSTNAME = "blog.wagnercardoso.dev";
 ---
 
 <!doctype html>
@@ -44,6 +48,23 @@ const imageURL = new URL(image, Astro.site).toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
+
+    <script
+      is:inline
+      define:vars={{
+        UMAMI_WEBSITE_ID,
+        UMAMI_SCRIPT_URL,
+        UMAMI_PRODUCTION_HOSTNAME,
+      }}
+    >
+      if (window.location.hostname === UMAMI_PRODUCTION_HOSTNAME) {
+        const script = document.createElement("script");
+        script.defer = true;
+        script.src = UMAMI_SCRIPT_URL;
+        script.setAttribute("data-website-id", UMAMI_WEBSITE_ID);
+        document.head.appendChild(script);
+      }
+    </script>
 
     <slot name="head" />
   </head>
