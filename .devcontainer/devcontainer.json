@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile"
   },
 
-  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash",
+  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && npm install -g @fission-ai/openspec@latest",
   "postStartCommand": "git config user.name 'Wagner Cardoso' && git config user.email 'wagnerdev01@gmail.com'",
 
   "forwardPorts": [4321, 4322],
